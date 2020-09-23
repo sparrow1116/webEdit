@@ -12,7 +12,7 @@
                 {{formatData.desciption}}
             </div>
             <div class='foot'>
-              <span class='time'>09-18</span>
+              <span class='time'>{{formatData.time}}</span>
               <span>浏览：</span>
               <span>2000</span>
               <span class='tag'>什么</span>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-// import config from '@/config'
+import config from '@/config'
 
 
 export default {
@@ -38,9 +38,13 @@ export default {
             handler (val) {
                 console.log(val)
                 console.log(val.headImg)
-                // val.headImg = config.tmpImgBase + val.headImg
+                val.headImg = config.tmpImgBase + '/' + val.headImg
+                if(val.time){
+                  val.time = new Date(val.time).Format('yyyy-MM-dd')
+                }
                 
                 this.formatData = val;
+
             }
       }
   },
@@ -53,19 +57,34 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+
+@media screen and (min-width: 1500px){
+  .item{
+    background:'red';
+    .left{
+      width: 10% !important;
+    }
+    .right{
+      width: 85% !important;
+    }
+  }
+}
+
 .item {
     display: flex;
     border-bottom: 1px dashed;
-    padding: 0.1rem 0.1rem;
+    padding: 0.3rem 0.1rem;
     .left{
-      width:26%;
+      width:8rem;
+      display: flex;
       img{
+        align-self: center;
         width:100%;
-        height:100%;
+        height:2rem;
       }
     }
     .right{
-      width:70%;
+      width:23rem;
       padding-left:0.1rem;
       display: flex;
       flex-flow: column;
@@ -90,7 +109,7 @@ export default {
         }
       }
       .content{
-        font-size:0.3rem;
+        font-size:0.2rem;
         line-height:0.4rem;
         margin-top:0.1rem;
         text-align: left;
@@ -102,7 +121,7 @@ export default {
         -webkit-box-orient: vertical;
       }
       .foot{
-        font-size:0.3rem;
+        font-size:0.2rem;
         position:relative;
         margin-top:0.1rem;
         .time{

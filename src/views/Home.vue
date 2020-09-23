@@ -30,15 +30,15 @@ export default {
   },
   methods:{
       async getData(){
-          this.list = await myFetch({url:api.getList});
-          // console.log(dd)
+          let data = await myFetch({url:api.getList});
+          this.list = Object.freeze(data);
       }
   }
 }
 </script>
 <style scoped lang="scss">
   .list {
-    max-width: 1200px;
+    max-width: 1000px;
     margin:0 auto;
   }
 
