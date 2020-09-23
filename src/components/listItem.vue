@@ -1,5 +1,5 @@
 <template>
-<div class="item">
+<div class="item" @click="choseItem">
         <div class='left'>
           <img :src=formatData.headImg />
         </div>
@@ -32,12 +32,17 @@ export default {
           formatData:{}
       }
   },
+  props: {
+    data: {
+        type:Object,
+        default:() => {}
+    }
+  },
   watch:{
       data:{
            immediate: true,    // 这句重要
             handler (val) {
-                console.log(val)
-                console.log(val.headImg)
+                
                 val.headImg = config.tmpImgBase + '/' + val.headImg
                 if(val.time){
                   val.time = new Date(val.time).Format('yyyy-MM-dd')
@@ -48,10 +53,9 @@ export default {
             }
       }
   },
-  props: {
-    data: {
-        type:Object,
-        default:() => {}
+  methods:{
+    choseItem(){
+      this.$emit('choseItem',this.formatData.myId)
     }
   }
 }
@@ -102,8 +106,8 @@ export default {
           font-size:0.3rem;
           color: red;
           padding: 0.02rem 0.08rem;
-          width:0.7rem;
-          height:0.4rem;
+          width:1rem;
+          height:0.5rem;
           text-align: center;
           border:1px solid red;
         }

@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class='list'>
-      <ListItem v-for="item in list" :key='item.myId' :data=item></ListItem>
+      <ListItem v-for="item in list" :key='item.myId' :data=item @choseItem="choseItem"></ListItem>
     </div>
     
   </div>
@@ -32,6 +32,10 @@ export default {
       async getData(){
           let data = await myFetch({url:api.getList});
           this.list = Object.freeze(data);
+      },
+      choseItem(id){
+        console.log('id::' + id)
+        this.$router.push({ name: 'detail', query:{myId:id}})
       }
   }
 }
