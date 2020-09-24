@@ -6,6 +6,10 @@ import 'view-design/dist/styles/iview.css';
 
 import {init} from './util/tools'
 
+import {requests} from './service/fetch'   
+console.log(requests)
+Vue.prototype.$http = requests.requests  
+
 // import VueVirtualScroller from 'vue-virtual-scroller'
 // import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 // Vue.use(VueVirtualScroller)
