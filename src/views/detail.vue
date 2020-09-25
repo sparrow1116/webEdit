@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-      <div class='instruntion'>
+      <div class='instruntion' ref='page1'>
           <div class='item'>
               <span>缩略图</span>
               <img :src='introduceData.headImg'/>
@@ -45,8 +45,46 @@
             <Button class='btn' type='primary'>编辑详情</Button>
           </div>
       </div>
-      <div class='detail'>
-          我是第二页
+      <div class='detail' ref=page2>
+          <div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo reqw</div>
+            <div>wo shihaha</div>
+            <div>wo reqw</div>
+            <div>wo reqw</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+            <div>wo rewq</div>
+            <div>wo reqw</div>
+            <div>wo yyy</div>
+            <div>wo shihaha</div>
+            <div>wo shihaha</div>
+          </div>
+          
       </div>
   </div>
 </template>
@@ -77,6 +115,62 @@ export default {
   },
   mounted(){
     this.getData()
+
+    this.clientHeight = this.$refs.page1.clientHeight
+
+    this.$refs.page1.ontouchstart = (event)=>{
+        this.startY = event.targetTouches[0].pageY
+
+        this.$refs.page1.ontouchmove = (e)=>{
+            this.endY = e.targetTouches[0].pageY
+            
+            this.delta = this.startY - this.endY
+            if(this.delta > 0){
+                this.$refs.page1.style.top = 0 - this.delta + 'px'
+                this.$refs.page2.style.top = this.clientHeight - this.delta + 'px'
+            }
+
+        }
+
+        this.$refs.page1.ontouchend = ()=>{
+            this.$refs.page1.ontouchmove = null;
+            if(this.delta > 200){
+                this.$refs.page1.style.top = 0 - this.clientHeight + 'px'
+                this.$refs.page2.style.top = 0 + 'px'
+            }
+        }
+    }
+
+    this.$refs.page2.ontouchstart = (event)=>{
+        // this.startY = event.targetTouches[0].pageY
+        if(this.$refs.page2.scrollTop){
+            return;
+        }
+        this.startY = event.targetTouches[0].pageY
+
+        this.$refs.page2.ontouchmove = (e)=>{
+            this.endY = e.targetTouches[0].pageY
+            
+            this.delta = this.startY - this.endY
+            if(this.delta < 0){
+                this.$refs.page1.style.top = -this.clientHeight - this.delta + 'px'
+                this.$refs.page2.style.top = 0 - this.delta + 'px'
+            }
+
+        }
+
+        this.$refs.page2.ontouchend = ()=>{
+            this.$refs.page2.ontouchmove = null;
+            if(this.delta < -200){
+                this.$refs.page1.style.top = 0
+                this.$refs.page2.style.top = this.clientHeight + 'px'
+            }
+        }
+
+    }
+
+
+
         
   },
   methods:{
@@ -217,6 +311,7 @@ export default {
                 
             }
             .addtion{
+                margin-top:0.1rem;
                 font-size:0.3rem;
                 span{
                     display: inline;
@@ -224,8 +319,9 @@ export default {
                 }
             }
             input{
-                height:0.5rem;
-                font-size: 0.3rem;
+                height:0.6rem;
+                padding-left:0.2rem;
+                font-size: 0.4rem;
                 border:1px solid #aaa;
             }
         }
