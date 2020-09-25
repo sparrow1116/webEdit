@@ -1,9 +1,9 @@
 <template>
-  <div class="detail">
+  <div class="page">
       <div class='instruntion'>
           <div class='item'>
               <span>缩略图</span>
-              <img src='https://butaolu.com/zb_users/upload/2020/09/202009181600441466492443.jpg'/>
+              <img :src='introduceData.headImg'/>
               <Button class='modify' type='primary'>
                   修改图片
                   <input type="file" accept="image/*"
@@ -17,32 +17,36 @@
           </div>
           <div class='item'>
               <span>标题</span>
-              <textarea></textarea>
+              <textarea v-model="introduceData.title"></textarea>
           </div>
           <div class='item'>
               <span>简介</span>
-              <textarea></textarea>
+              <textarea v-model="introduceData.desciption"></textarea>
           </div>
           <div  class='item'>
               <span>标签</span>
               <div class='checkboxGroup'>
                     <span v-for="item in tags" :key='item.key'>
-                      <input type="checkbox" :value="item.label" />
+                      <input type="checkbox" :checked='item.checked' :value="item.label" />
                       <span>{{item.label}}</span>
                     </span>   
               </div>
               <div class='addtion'>
-                  <span>其他:</span><input />
+                  <span>其他:</span><input v-model="selfTags"/>
               </div>
           </div>
           <div class='item'>
               <span>推荐等级</span>
-              <input type="text">
+              <input type="text" v-model="introduceData.level">
+          </div>
+
+          <div class='ctlButton'>
+            <Button class='btn' type='primary'>预览</Button> 
+            <Button class='btn' type='primary'>编辑详情</Button>
           </div>
       </div>
-      <div class='ctlButton'>
-          <Button class='btn' type='primary'>预览</Button> 
-          <Button class='btn' type='primary'>编辑详情</Button>
+      <div class='detail'>
+          我是第二页
       </div>
   </div>
 </template>
@@ -54,14 +58,14 @@ import config  from '@/config'
 export default {
    data(){
        return {
-           introduceData:{},
-        model10:[],
-        tags:[{key:'bilei',label:'币类'},
-          {key:'zhuce',label:'注册账号'},
-          {key:'tuiguang',label:'应用推广'},
-          {key:'jutou',label:'巨头应用'},
-          {key:'fanlu',label:'返撸套路'},
-          {key:'renwu',label:'手机任务'}]
+        selfTags:'',
+        introduceData:{},
+        tags:[{key:'bilei',label:'币类',checked:false},
+          {key:'zhuce',label:'注册账号',checked:false},
+          {key:'tuiguang',label:'应用推广',checked:false},
+          {key:'jutou',label:'巨头应用',checked:false},
+          {key:'fanlu',label:'返撸套路',checked:false},
+          {key:'renwu',label:'手机任务',checked:false}]
        }
    },
     
@@ -78,8 +82,29 @@ export default {
   methods:{
       formatData(obj) {
         //   console.log(obj)
-        obj.headImg = 
-          this.introduceData = config.obj
+        obj.headImg = config.tmpImgBase + '/' + obj.headImg;
+        if(obj.tags){
+            obj.tags = JSON.parse(obj.tags);
+            let newTags = []
+            for(let i = 0; i<obj.tags.length; i++){
+                let findIt = false;
+                for(let j = 0; j<this.tags.length; j++){
+                    if(obj.tags[i] == this.tags[j].label){
+                        findIt = true;
+                        this.tags[j].checked = true;
+                        break;
+                    }
+                }
+                if(!findIt){
+                    newTags.push(obj.tags[i]);
+                }
+            }
+            this.selfTags = newTags.join(',')
+        }
+        if(!obj.level){
+            obj.level = 0;
+        }
+        this.introduceData = obj
       },
       async getData() {
           console.log(this.$http)
@@ -115,9 +140,11 @@ export default {
 }
 </script>
 <style scoped lang='scss'>
-.detail{
-    max-width: 1000px;
-    margin:0 auto;
+.page{
+    position:relative;
+    overflow: hidden;
+    width:100%;
+    height:100%;
 
     .uploader_file{
         opacity: 0;
@@ -128,9 +155,19 @@ export default {
         height: 100%;
         cursor: pointer;
     }
-
+    .detail{
+        position:absolute;
+        background:red;
+        font-size:0.4rem;
+        width:100%;
+        height:100%;
+        top:100%;
+    }
 
     .instruntion{
+        position:absolute;
+        width:100%;
+        height:100%;
         .item{
             border-bottom: 1px dashed #222;
             padding-bottom: 0.2rem;
@@ -188,20 +225,21 @@ export default {
             }
             input{
                 height:0.5rem;
+                font-size: 0.3rem;
                 border:1px solid #aaa;
             }
         }
-    }
-    .ctlButton{
-        
-        display: flex;
-        justify-content: space-around;
-        .btn{
-            font-size:0.37rem;
-            width:2rem;
-            height:0.7rem;
+        .ctlButton{
+            display: flex;
+            justify-content: space-around;
+            .btn{
+                font-size:0.37rem;
+                width:2rem;
+                height:0.7rem;
+            }
         }
     }
+    
 }
 
 </style>

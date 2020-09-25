@@ -12,7 +12,7 @@
 import ListItem from '@/components/listItem.vue'
 
 import api from '@/service/api'
-import myFetch from '@/service/fetch'
+import {myFetch} from '@/service/fetch'
 
 export default {
   name: 'Home',
@@ -41,9 +41,6 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-  .list {
-    max-width: 1000px;
-    margin:0 auto;
-  }
+
 
 </style>
