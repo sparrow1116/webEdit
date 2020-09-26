@@ -75,7 +75,7 @@ function myFetch(option){
             }  
           }).then(
             (myBlob)=>{
-                console.log(myBlob);
+                // console.log(myBlob);
                 res(myBlob.msg.data)
             }
         ).catch(

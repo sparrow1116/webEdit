@@ -1,5 +1,9 @@
 <template>
+
   <div class="home">
+    <van-nav-bar
+      title="编辑仓库列表页"
+    />
     <div class='list'>
       <ListItem v-for="item in list" :key='item.myId' :data=item @choseItem="choseItem"></ListItem>
     </div>

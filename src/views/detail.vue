@@ -1,103 +1,113 @@
 <template>
   <div class="page">
-      <div class='instruntion' ref='page1'>
-          <div class='item'>
-              <span>缩略图</span>
-              <img :src='introduceData.headImg'/>
-              <Button class='modify' type='primary'>
-                  修改图片
-                  <input type="file" accept="image/*"
-                    @change='uploadPic'
-                    name="uploader-input" 
-                    class="uploader_file"
-                    id="upload">
-              </Button>
-              
-              <!-- <Button class='modify' type='primary'>修改</Button> -->
-          </div>
-          <div class='item'>
-              <span>标题</span>
-              <textarea v-model="introduceData.title"></textarea>
-          </div>
-          <div class='item'>
-              <span>简介</span>
-              <textarea v-model="introduceData.desciption"></textarea>
-          </div>
-          <div  class='item'>
-              <span>标签</span>
-              <div class='checkboxGroup'>
-                    <span v-for="item in tags" :key='item.key'>
-                      <input type="checkbox" :checked='item.checked' :value="item.label" />
-                      <span>{{item.label}}</span>
-                    </span>   
-              </div>
-              <div class='addtion'>
-                  <span>其他:</span><input v-model="selfTags"/>
-              </div>
-          </div>
-          <div class='item'>
-              <span>推荐等级</span>
-              <input type="text" v-model="introduceData.level">
-          </div>
+      <van-nav-bar
+        title="编辑页面"
+        left-text="返回"
+        left-arrow
+        @click-left="onClickLeft"
+        />
+        <van-tabs v-model="active">
+            <van-tab title="列表页">
+                <div class='instruntion' ref='page1'>
+                <div class='item'>
+                    <span>缩略图</span>
+                    <img :src='introduceData.headImg' @click='previewPic(introduceData.headImg)'/>
+                    <van-button class='modify' type='primary'>
+                        修改图片
+                        <input type="file" accept="image/*"
+                            @change='uploadPic'
+                            name="uploader-input" 
+                            class="uploader_file"
+                            id="upload">
+                    </van-button>
+                    
+                    <!-- <Button class='modify' type='primary'>修改</Button> -->
+                </div>
+                <div class='item'>
+                    <span>标题</span>
+                    <textarea v-model="introduceData.title"></textarea>
+                </div>
+                <div class='item'>
+                    <span>简介</span>
+                    <textarea v-model="introduceData.desciption"></textarea>
+                </div>
+                <div  class='item'>
+                    <span>标签</span>
+                    <div class='checkboxGroup'>   
+                        <van-checkbox class='checkbox' v-for="item in tags" :key='item.key' v-model="item.checked">{{item.label}}</van-checkbox>
+                    </div>
+                    <div class='addtion'>
+                        <van-field v-model="selfTags" 
+                        placeholder='是否为其他分类'
+                        label="其他分类" />
+                    </div>
+                </div>
+                <div class='item'>
+                    <van-field v-model="introduceData.level" label="推荐等级" />
+                </div>
 
-          <div class='ctlButton'>
-            <Button class='btn' type='primary'>预览</Button> 
-            <Button class='btn' type='primary'>编辑详情</Button>
-          </div>
-      </div>
-      <div class='detail' ref=page2>
-          <div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo reqw</div>
-            <div>wo shihaha</div>
-            <div>wo reqw</div>
-            <div>wo reqw</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-            <div>wo rewq</div>
-            <div>wo reqw</div>
-            <div>wo yyy</div>
-            <div>wo shihaha</div>
-            <div>wo shihaha</div>
-          </div>
-          
-      </div>
+                <div class='item'>
+                    <van-button type='primary' @click='preview(0)'>预览</van-button> 
+                </div>
+                <div class='item'></div>
+            </div>
+            </van-tab>
+            <van-tab title="详情页">
+                <div class='detail' ref=page2>
+
+                    <div class='head'>
+                        <div class='title'>标题</div>
+                        <textarea v-model="detailData.title"/>
+                    </div>
+                    <div class='block' v-for='(block,index) in detailData.contentArr' :key='index'>
+                        <div class='title'>段落{{index}}</div>
+                        <div class="content">
+                            <textarea v-if='block.type == "text"' v-model="block.data"
+                                placeholder="请输入文字"/>
+                            <img v-if='block.type =="img"' title='请插入图片'
+                                :src='block.data' @click='previewPic(block.data)'/>
+                            <div class='ctrlBtns'>
+                                <van-button class='btn' @click='insertPic(index)'>插入图片</van-button>
+                                <van-button class='btn' @click='insertText(index)'>插入文字</van-button>
+                                <van-button class='btn' @click='deleteBlock(index)'>删除</van-button>
+                                <van-button class='btn' v-if='block.type =="img"'>
+                                    修改图片
+                                    <input type="file" accept="image/*"
+                                        @change='uploadPic2'
+                                        name="uploader-input" 
+                                        class="uploader_file"
+                                        id="upload" />
+                                    </van-button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='block foot'>
+                        <van-button class='btn' type='primary' @click='preview(1)'>预览</van-button>
+                        <van-button class='btn' type='primary' @click='release'>发布</van-button>
+                    </div>
+                    
+                </div>
+            </van-tab>
+            
+        </van-tabs>
+      
+      
   </div>
 </template>
 <script>
 import api from '@/service/api'
 import {myFetch} from '@/service/fetch'
 import config  from '@/config'
+import { ImagePreview,Toast } from 'vant';
+import {deepClone, random} from '@/util/tools'
 
 export default {
    data(){
        return {
+           active:0,
         selfTags:'',
         introduceData:{},
+        detailData:{},
         tags:[{key:'bilei',label:'币类',checked:false},
           {key:'zhuce',label:'注册账号',checked:false},
           {key:'tuiguang',label:'应用推广',checked:false},
@@ -108,72 +118,119 @@ export default {
    },
     
   beforeCreate(){
-      console.log('before create')
+    //   console.log('before create')
   },
   created(){
       this.myId = this.$route.query.myId
   },
   mounted(){
     this.getData()
-
-    this.clientHeight = this.$refs.page1.clientHeight
-
-    this.$refs.page1.ontouchstart = (event)=>{
-        this.startY = event.targetTouches[0].pageY
-
-        this.$refs.page1.ontouchmove = (e)=>{
-            this.endY = e.targetTouches[0].pageY
-            
-            this.delta = this.startY - this.endY
-            if(this.delta > 0){
-                this.$refs.page1.style.top = 0 - this.delta + 'px'
-                this.$refs.page2.style.top = this.clientHeight - this.delta + 'px'
-            }
-
-        }
-
-        this.$refs.page1.ontouchend = ()=>{
-            this.$refs.page1.ontouchmove = null;
-            if(this.delta > 200){
-                this.$refs.page1.style.top = 0 - this.clientHeight + 'px'
-                this.$refs.page2.style.top = 0 + 'px'
-            }
-        }
-    }
-
-    this.$refs.page2.ontouchstart = (event)=>{
-        // this.startY = event.targetTouches[0].pageY
-        if(this.$refs.page2.scrollTop){
-            return;
-        }
-        this.startY = event.targetTouches[0].pageY
-
-        this.$refs.page2.ontouchmove = (e)=>{
-            this.endY = e.targetTouches[0].pageY
-            
-            this.delta = this.startY - this.endY
-            if(this.delta < 0){
-                this.$refs.page1.style.top = -this.clientHeight - this.delta + 'px'
-                this.$refs.page2.style.top = 0 - this.delta + 'px'
-            }
-
-        }
-
-        this.$refs.page2.ontouchend = ()=>{
-            this.$refs.page2.ontouchmove = null;
-            if(this.delta < -200){
-                this.$refs.page1.style.top = 0
-                this.$refs.page2.style.top = this.clientHeight + 'px'
-            }
-        }
-
-    }
-
-
-
+    // this.initScrollPage();
         
   },
   methods:{
+      getListResult(){
+          let resultTags = []
+          for(let i = 0; i<this.tags.length; i++){
+              if(this.tags[i].checked){
+                resultTags.push(this.tags[i].label)
+              }
+          }  
+          if(this.selfTags){
+              resultTags.push(this.selfTags)
+          }
+          let dd = deepClone(this.introduceData)
+          dd.tags = JSON.stringify(resultTags)
+          dd.browseCount = random(10,100)
+          return dd
+      },
+      getDetailResult(){
+          let dd = deepClone(this.detailData)
+          dd.contentArr = JSON.stringify(dd.contentArr)
+          return dd
+      },
+      async release(){
+          let dd = {
+              instruction: this.getListResult(),
+              detail: this.getDetailResult()
+          }
+          await myFetch({url:api.saveItem, data:dd});
+          Toast('发布成功');
+          this.$router.back()
+          
+      },
+      preview(index){
+          if(index == 0){
+              this.$router.push({ name: 'preview', params:{dataList:this.getListResult()}})
+          }else if(index == 1){
+              this.$router.push({ name: 'preview', params:{detail:this.getDetailResult()}})
+          }
+      },
+      onClickLeft(){
+        this.$router.back()
+      },
+      previewPic(url){
+        console.log(url)
+        ImagePreview({
+            images: [
+                url
+            ],
+            closeable: true,
+        });
+      },
+    //   initScrollPage(){
+    //     this.clientHeight = this.$refs.page1.clientHeight
+
+    //     this.$refs.page1.ontouchstart = (event)=>{
+    //         this.startY = event.targetTouches[0].pageY
+
+    //         this.$refs.page1.ontouchmove = (e)=>{
+    //             this.endY = e.targetTouches[0].pageY
+                
+    //             this.delta = this.startY - this.endY
+    //             if(this.delta > 0){
+    //                 this.$refs.page1.style.top = 0 - this.delta + 'px'
+    //                 this.$refs.page2.style.top = this.clientHeight - this.delta + 'px'
+    //             }
+
+    //         }
+
+    //         this.$refs.page1.ontouchend = ()=>{
+    //         this.$refs.page1.ontouchmove = null;
+    //         if(this.delta > 200){
+    //             this.$refs.page1.style.top = 0 - this.clientHeight + 'px'
+    //             this.$refs.page2.style.top = 0 + 'px'
+    //         }
+    //     }
+    //     }
+
+    //     this.$refs.page2.ontouchstart = (event)=>{
+    //         // this.startY = event.targetTouches[0].pageY
+    //         if(this.$refs.page2.scrollTop){
+    //             return;
+    //         }
+    //         this.startY = event.targetTouches[0].pageY
+
+    //         this.$refs.page2.ontouchmove = (e)=>{
+    //             this.endY = e.targetTouches[0].pageY
+                
+    //             this.delta = this.startY - this.endY
+    //             if(this.delta < 0){
+    //                 this.$refs.page1.style.top = -this.clientHeight - this.delta + 'px'
+    //                 this.$refs.page2.style.top = 0 - this.delta + 'px'
+    //             }
+
+    //         }
+
+    //         this.$refs.page2.ontouchend = ()=>{
+    //         this.$refs.page2.ontouchmove = null;
+    //         if(this.delta < -200){
+    //             this.$refs.page1.style.top = 0
+    //             this.$refs.page2.style.top = this.clientHeight + 'px'
+    //         }
+    //     }
+    //     }
+    //   },
       formatData(obj) {
         //   console.log(obj)
         obj.headImg = config.tmpImgBase + '/' + obj.headImg;
@@ -200,11 +257,50 @@ export default {
         }
         this.introduceData = obj
       },
+      formatDetail(obj) {
+          obj.contentArr = JSON.parse(obj.contentArr)
+          let arr = []
+          for(let i = 0; i<obj.contentArr.length; i++){
+              if(obj.contentArr[i].type === 'img'){
+                  obj.contentArr[i].data = config.tmpImgBase + '/' + obj.contentArr[i].data
+              }
+              if(obj.contentArr[i].data){
+                  arr.push(obj.contentArr[i])
+              }
+          }
+          obj.contentArr = arr
+          this.detailData = obj
+      },
       async getData() {
-          console.log(this.$http)
         // let dd = this.$http.post(api.getWebItem,{myId:this.myId})
         let dd = await myFetch({url:api.getWebItem, data:{myId:this.myId}});
+        let bb = await myFetch({url:api.getDetail, data:{myId:this.myId}});
         this.formatData(dd)
+        this.formatDetail(bb)
+        // console.log(bb)
+      },
+      insertPic(index){
+        // console.log(index)
+        let d = {
+            type:'img',
+            data:''
+        }
+        this.detailData.contentArr.splice(index+1,0,d);
+      },
+      insertText(index){
+        let d = {
+            type:'text',
+            data:''
+        }
+        this.detailData.contentArr.splice(index+1,0,d);
+        // console.log(index)
+      },
+      deleteBlock(index){
+        console.log(index)
+        this.detailData.contentArr.splice(index,1);
+      },
+      uploadPic2(event){
+            console.log(event)
       },
       uploadPic(event){
         console.log(event)
@@ -251,41 +347,95 @@ export default {
     }
     .detail{
         position:absolute;
-        background:red;
-        font-size:0.4rem;
+        font-size:1rem;
         width:100%;
-        height:100%;
-        top:100%;
+        height:45rem;
+        overflow: auto;
+        
+        .head{
+            padding:0.8rem;
+            textarea{
+                text-align: left;
+                width:21rem;
+                height:5rem;
+                border: 1px solid #333;
+            }
+        }
+        .title{
+            font-size:1.5rem;
+            text-align: left;
+            font-weight: bold;
+        }
+        .block{
+            padding:0.8rem;
+            border-top: 1px dashed #333;
+            .content{
+                display: flex;
+                justify-content: space-between;
+                height:13rem;
+                flex-direction: column;
+                img{
+                    width:14rem;
+                    height:10rem;
+                }
+                textarea{
+                    padding:0.2rem;
+                    width: 20rem;
+                    border: 1px solid #333;
+                    height:9rem;
+                }
+                .ctrlBtns{
+                    
+                    margin-right:0.8rem;
+                    margin-top:0.6rem;
+                    display: flex;
+                    justify-content: space-around;
+                    text-align: right;
+                        .btn{
+                        margin-top:0.1rem;
+                        
+                    }
+                }
+            }
+        }
+        .foot{
+            padding-bottom:7rem;
+            text-align: left;
+            .btn{
+                margin-left:5rem;
+            }
+        }
+       
     }
 
     .instruntion{
-        position:absolute;
-        width:100%;
-        height:100%;
+        overflow-y:scroll;
+        height:45rem;
         .item{
             border-bottom: 1px dashed #222;
-            padding-bottom: 0.2rem;
-            margin-bottom: 0.2rem;
+            padding:0.5rem;
             text-align: left;
             img{
-                height: 2rem;
+                height: 7rem;
 
             }
             span{
                 display: block;
                 font-weight:bold;
-                font-size:0.4rem;
+                font-size:1.5rem;
             }
             .modify{
                 float:right;
-                height:0.6rem;
                 position:relative;
-                font-size:0.4rem;
+                input{
+                    width:100%;
+                    height:100%;
+                }
             }
             textarea{
-                width:6.7rem;
-                font-size:0.4rem;
-                height:2.5rem;
+                width:22rem;
+                font-size:1rem;
+                height:7rem;
                 border:1px solid #aaa;
             }
             .options{
@@ -293,31 +443,15 @@ export default {
                 height:0.8rem;
             }
             .checkboxGroup{
-                font-size:0.3rem;
                 display: flex;
                 flex-wrap: wrap;
-                span{
-                    display: inline;
-                    margin-left: 0.3rem;
-                    input{
-                        width:0.3rem;
-                        height:0.3rem;
-                    }
-                    span{
-                        margin-left:0.1rem;
-                        font-weight: 300;
-                    }
+                .checkbox{
+                    margin-left:1rem;
+                    margin-top:1rem;
                 }
                 
             }
-            .addtion{
-                margin-top:0.1rem;
-                font-size:0.3rem;
-                span{
-                    display: inline;
-                    font-weight: 300;
-                }
-            }
+            
             input{
                 height:0.6rem;
                 padding-left:0.2rem;
