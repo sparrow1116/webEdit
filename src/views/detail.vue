@@ -15,7 +15,7 @@
                     <van-button class='modify' type='primary'>
                         修改图片
                         <input type="file" accept="image/*"
-                            @change='uploadPic'
+                            @change='uploadPic($event,introduceData.headImg)'
                             name="uploader-input" 
                             class="uploader_file"
                             id="upload">
@@ -73,7 +73,7 @@
                                 <van-button class='btn' v-if='block.type =="img"'>
                                     修改图片
                                     <input type="file" accept="image/*"
-                                        @change='uploadPic2'
+                                        @change='uploadPic2($event,index)'
                                         name="uploader-input" 
                                         class="uploader_file"
                                         id="upload" />
@@ -97,10 +97,12 @@
 <script>
 import api from '@/service/api'
 import {myFetch} from '@/service/fetch'
+
 import config  from '@/config'
 import { ImagePreview,Toast } from 'vant';
-import {deepClone, random} from '@/util/tools'
-
+import {deepClone, random,guid} from '@/util/tools';
+import ossClient from '@/util/oss.js'
+let OSS = require('ali-oss');
 export default {
    data(){
        return {
@@ -299,16 +301,52 @@ export default {
         console.log(index)
         this.detailData.contentArr.splice(index,1);
       },
-      uploadPic2(event){
-            console.log(event)
+      readFileAsBuffer(file) {
+        const reader = new FileReader();
+        return new Promise((resolve, reject) => {
+            try{
+                reader.readAsDataURL(file);
+                reader.onload = function() {
+                    
+                const base64File = reader.result.replace(
+                    /^data:\w+\/\w+;base64,/,
+                    ""
+                );
+                resolve(new OSS.Buffer(base64File, "base64"));
+                };
+            }catch(e){
+                reject(e.stack)
+            }
+            
+        });
       },
-      uploadPic(event){
-        console.log(event)
-        // var $file = event.currentTarget;
-        // var formData = new FormData();
-        // var file = $file.files;
-        // formData = new FormData();
-        // formData.append(file[0].name, file[0]);
+      async uploadPic2(event,index){
+        let file = event.target.files[0];
+        let file_re = await this.readFileAsBuffer(file)
+
+        let picName = ''
+        if(this.detailData.contentArr[index].data){
+        let nameArr = this.detailData.contentArr[index].data.split('/')
+        picName = nameArr[nameArr.length-1]
+        }else{
+            picName = guid() + '.png'
+        }
+        let result = await ossClient.put(picName, file_re);
+        console.log('result')
+        // console.log(result)
+        this.detailData.contentArr[index].data = result.url;
+      },
+      async uploadPic(event,name){
+         let file = event.target.files[0];
+        let file_re = await this.readFileAsBuffer(file)
+        // var imgtype = file.type.substr(6,4);
+
+        let nameArr = name.split('/')
+        let picName = nameArr[nameArr.length-1]
+        let result = await ossClient.put(picName, file_re);
+        // console.log('result')
+        // console.log(result)
+        this.introduceData.headImg = result.url;
         // $.ajax({
         //     url: '/upload',
         //     type: 'POST',
