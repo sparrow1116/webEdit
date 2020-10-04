@@ -13,7 +13,10 @@ const routes = [
   {
     path: '/detail',
     name: 'detail',
-    component: () => import('../views/detail.vue')
+    component: () => import('../views/detail.vue'),
+    meta:{
+      keepAlive: true
+    }
   },
   {
     path: '/preview',
@@ -27,5 +30,21 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+// router.beforeEach((to, from, next) => {
+//   if(to.name === 'detail'){
+    
+//     if(from.name === 'preview'){
+//       to.meta.keepAlive = true
+//     }else{
+//       to.meta.keepAlive = false
+//     }
+
+//   }
+//   console.log('to')
+//   console.log(to)
+//   console.log(from)
+//   next()
+// })
 
 export default router

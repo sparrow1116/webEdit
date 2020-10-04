@@ -118,17 +118,35 @@ export default {
           {key:'renwu',label:'手机任务',checked:false}]
        }
    },
-    
+    beforeRouteEnter(to, from, next){
+        console.log('detail to')
+        console.log(to)
+        console.log(from)
+        if(from.name === 'preview'){
+            to.meta.isBack = true;
+        }else{
+            to.meta.isBack = false
+        }
+        next()
+    },
   beforeCreate(){
     //   console.log('before create')
   },
   created(){
-      this.myId = this.$route.query.myId
+    //   console.log('created')
+      
   },
   mounted(){
-    this.getData()
+    //   console.log('mounted')
+    
     // this.initScrollPage();
         
+  },
+  activated(){
+      if(!this.$route.meta.isBack){
+        this.myId = this.$route.query.myId
+        this.getData()
+      }
   },
   methods:{
       getListResult(){
@@ -143,7 +161,10 @@ export default {
           }
           let dd = deepClone(this.introduceData)
           dd.tags = JSON.stringify(resultTags)
-          dd.browseCount = random(10,100)
+          if(window.baseCang === 'cangku'){
+            dd.browseCount = random(10,100)
+          }
+          
           return dd
       },
       getDetailResult(){
@@ -156,7 +177,7 @@ export default {
               instruction: this.getListResult(),
               detail: this.getDetailResult()
           }
-          await myFetch({url:api.saveItem, data:dd});
+          await myFetch({url:window.baseCang==='cangku'?api.saveItem:api.saveItemOnline, data:dd});
           Toast('发布成功');
           this.$router.back()
           
@@ -235,7 +256,10 @@ export default {
     //   },
       formatData(obj) {
         //   console.log(obj)
-        obj.headImg = config.tmpImgBase + '/' + obj.headImg;
+        if(obj.headImg.indexOf('http') < 0){
+            obj.headImg = config.tmpImgBase + '/' + obj.headImg;
+        }
+        
         if(obj.tags){
             obj.tags = JSON.parse(obj.tags);
             let newTags = []
@@ -264,7 +288,9 @@ export default {
           let arr = []
           for(let i = 0; i<obj.contentArr.length; i++){
               if(obj.contentArr[i].type === 'img'){
-                  obj.contentArr[i].data = config.tmpImgBase + '/' + obj.contentArr[i].data
+                  if(obj.contentArr[i].data.indexOf('http')<0){
+                    obj.contentArr[i].data = config.tmpImgBase + '/' + obj.contentArr[i].data
+                  }
               }
               if(obj.contentArr[i].data){
                   arr.push(obj.contentArr[i])
@@ -275,8 +301,10 @@ export default {
       },
       async getData() {
         // let dd = this.$http.post(api.getWebItem,{myId:this.myId})
-        let dd = await myFetch({url:api.getWebItem, data:{myId:this.myId}});
-        let bb = await myFetch({url:api.getDetail, data:{myId:this.myId}});
+        let dd = await myFetch({url:window.baseCang==='cangku'?api.getWebItem:api.getWebItemOnline, 
+                    data:{myId:this.myId}});
+        let bb = await myFetch({url:window.baseCang==='cangku'?api.getDetail:api.getDetailOnline, 
+                    data:{myId:this.myId}});
         this.formatData(dd)
         this.formatDetail(bb)
         // console.log(bb)

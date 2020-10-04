@@ -66,6 +66,12 @@ export default {
 <style scoped lang="scss">
 .block{
   padding: 0 1rem;
+  .content{
+    margin:0 auto;
+    img{
+      width:20rem;
+    }
+  }
 }
 
 </style>
