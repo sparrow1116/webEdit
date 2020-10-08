@@ -4,6 +4,9 @@
     <van-nav-bar
       title="编辑仓库列表页"
     />
+    <span class='addNew' @click='addNew'>
+      添加数据
+    </span>
     <span class="self_button" @click="isPopShow = !isPopShow">数据源</span>
     <div class="popSelect" v-show='isPopShow'>
       <div @click="choseBase('cangku')" :class="{active: currentBase=='cangku' ? true: false}">
@@ -92,6 +95,9 @@ export default {
         
 
     },
+    addNew(){
+      this.$router.push({ name: 'detail'})
+    },
     choseItem(id){
       console.log('id::' + id)
       this.$router.push({ name: 'detail', query:{myId:id}})
@@ -103,6 +109,13 @@ export default {
 .home{
   height:51rem;
   overflow-y:scroll;
+}
+.addNew{
+  position: absolute;
+  left: 1rem;
+  top: 0.7rem;
+  color: #1989fa;
+  z-index: 10;
 }
 .self_button{
   position: absolute;

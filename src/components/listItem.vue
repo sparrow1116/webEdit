@@ -125,15 +125,17 @@ export default {
     }
     .foot{
         font-size:0.8rem;
-        position:relative;
+        display: flex;
+        justify-content: space-between;
         margin-top:0.5rem;
         .time{
-          position: absolute;
+          
           left:0;
           top:0.1rem;
         }
         .tag{
-          position: absolute;
+  
+          margin-right:20px;
           right:0;
           top:0.1rem;
         }

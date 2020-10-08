@@ -8,5 +8,8 @@ export default {
     'getWebItem': '/api/fourweborginal/getWebItem',
     'getWebItemOnline': '/api/fourweb/getItem',
     'saveItem': '/api/fourweb/saveItem',
-    'saveItemOnline': '/api/fourweb/update'
+    'saveItemOnline': '/api/fourweb/update',
+    "deleteItem":'/api/fourweborginal/deleteItem',
+    'deleteItemOnline':'/api/fourweb/deleteItem',
+    'create':'/api/fourweb/createItem'
 }

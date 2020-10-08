@@ -46,8 +46,9 @@
                     <van-field v-model="introduceData.level" label="推荐等级" />
                 </div>
 
-                <div class='item'>
+                <div class='item' style="padding-bottom:8rem;">
                     <van-button type='primary' @click='preview(0)'>预览</van-button> 
+                    <van-button v-if='myId' style="margin-left:10rem" type='primary' @click='deleteData'>删除</van-button> 
                 </div>
                 <div class='item'></div>
             </div>
@@ -81,6 +82,12 @@
                             </div>
                         </div>
                     </div>
+                    <div v-if="detailData.contentArr.length === 0">
+                        <div class='ctrlBtns'>
+                                <van-button class='btn' @click='insertPic(0,true)'>插入图片</van-button>
+                                <van-button class='btn' @click='insertText(0,true)'>插入文字</van-button>
+                            </div>
+                    </div>
                     <div class='block foot'>
                         <van-button class='btn' type='primary' @click='preview(1)'>预览</van-button>
                         <van-button class='btn' type='primary' @click='release'>发布</van-button>
@@ -109,7 +116,10 @@ export default {
            active:0,
         selfTags:'',
         introduceData:{},
-        detailData:{},
+        myId:'',
+        detailData:{
+            contentArr:[]
+        },
         tags:[{key:'bilei',label:'币类',checked:false},
           {key:'zhuce',label:'注册账号',checked:false},
           {key:'tuiguang',label:'应用推广',checked:false},
@@ -172,12 +182,26 @@ export default {
           dd.contentArr = JSON.stringify(dd.contentArr)
           return dd
       },
+      async deleteData(){
+        await myFetch({url:window.baseCang==='cangku'?api.deleteItem:api.deleteItemOnline, data:{myId:this.myId}});
+        Toast('删除成功');
+		this.$router.back()
+      },
       async release(){
           let dd = {
               instruction: this.getListResult(),
               detail: this.getDetailResult()
           }
-          await myFetch({url:window.baseCang==='cangku'?api.saveItem:api.saveItemOnline, data:dd});
+          if(this.myId){
+            await myFetch({url:window.baseCang==='cangku'?api.saveItem:api.saveItemOnline, data:dd});
+          }else{
+              let myId = guid()
+              dd.instruction.myId = myId;
+              dd.detail.myId = myId;
+              dd.instruction.time = (new Date()).valueOf()
+              await myFetch({url:api.create,data:dd})
+          }
+          
           Toast('发布成功');
           this.$router.back()
           
@@ -277,6 +301,8 @@ export default {
                 }
             }
             this.selfTags = newTags.join(',')
+        }else{
+            this.selfTags = ''
         }
         if(!obj.level){
             obj.level = 0;
@@ -301,6 +327,21 @@ export default {
       },
       async getData() {
         // let dd = this.$http.post(api.getWebItem,{myId:this.myId})
+        this.introduceData = {
+            headImg:'',
+            title:'',
+            description:'',
+            tag:'',
+            type:'',
+            level:0
+        };
+        this.detailData = {
+            title:'',
+            contentArr:[]
+        };
+        if(!this.myId){
+            return;
+        }
         let dd = await myFetch({url:window.baseCang==='cangku'?api.getWebItem:api.getWebItemOnline, 
                     data:{myId:this.myId}});
         let bb = await myFetch({url:window.baseCang==='cangku'?api.getDetail:api.getDetailOnline, 
@@ -309,20 +350,33 @@ export default {
         this.formatDetail(bb)
         // console.log(bb)
       },
-      insertPic(index){
+      insertPic(index,initail){
         // console.log(index)
         let d = {
             type:'img',
             data:''
         }
-        this.detailData.contentArr.splice(index+1,0,d);
+        if(initail){
+            this.detailData.contentArr = [d]
+        }else{
+            this.detailData.contentArr.splice(index+1,0,d);
+        }
+        let dd = deepClone(this.detailData)
+        this.detailData = dd;
       },
-      insertText(index){
+      insertText(index,initail){
         let d = {
             type:'text',
             data:''
         }
-        this.detailData.contentArr.splice(index+1,0,d);
+        if(initail){
+            this.detailData.contentArr = [d]
+        }else{
+            this.detailData.contentArr.splice(index+1,0,d);
+        }
+        let dd = deepClone(this.detailData)
+        this.detailData = dd;
+        // console.log(this.detailData)
         // console.log(index)
       },
       deleteBlock(index){
@@ -368,9 +422,14 @@ export default {
          let file = event.target.files[0];
         let file_re = await this.readFileAsBuffer(file)
         // var imgtype = file.type.substr(6,4);
-
-        let nameArr = name.split('/')
-        let picName = nameArr[nameArr.length-1]
+        let picName = ''
+        if(name){
+            let nameArr = name.split('/')
+            picName = nameArr[nameArr.length-1]
+        }else{
+            picName = guid() + '.png'
+        }
+        
         let result = await ossClient.put(picName, file_re);
         // console.log('result')
         // console.log(result)
@@ -465,7 +524,7 @@ export default {
             }
         }
         .foot{
-            padding-bottom:7rem;
+            padding-bottom:8rem;
             text-align: left;
             .btn{
                 margin-left:5rem;
