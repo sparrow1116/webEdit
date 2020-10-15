@@ -121,10 +121,11 @@ export default {
             contentArr:[]
         },
         tags:[{key:'bilei',label:'币类',checked:false},
-          {key:'zhuce',label:'注册账号',checked:false},
+            {key:'gouwu',label:'购物平台',checked:false},
+            {key:'bank',label:'银行证券',checked:false},
           {key:'tuiguang',label:'应用推广',checked:false},
-          {key:'jutou',label:'巨头应用',checked:false},
-          {key:'fanlu',label:'返撸套路',checked:false},
+          {key:'guaji',label:'挂机软件',checked:false},
+          {key:'zhuce',label:'注册账号',checked:false},
           {key:'renwu',label:'手机任务',checked:false}]
        }
    },
