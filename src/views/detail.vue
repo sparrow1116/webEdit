@@ -125,8 +125,8 @@ export default {
             {key:'bank',label:'银行证券',checked:false},
           {key:'tuiguang',label:'应用推广',checked:false},
           {key:'guaji',label:'挂机软件',checked:false},
-          {key:'zhuce',label:'注册账号',checked:false},
-          {key:'renwu',label:'手机任务',checked:false}]
+          {key:'dama',label:'扫码打码',checked:false},
+          {key:'转发',label:'转发签到',checked:false}]
        }
    },
     beforeRouteEnter(to, from, next){
