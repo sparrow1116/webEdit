@@ -36,11 +36,15 @@
                     <div class='checkboxGroup'>   
                         <van-checkbox class='checkbox' v-for="item in tags" :key='item.key' v-model="item.checked">{{item.label}}</van-checkbox>
                     </div>
-                    <div class='addtion'>
+                    <!-- <div class='addtion'>
                         <van-field v-model="selfTags" 
                         placeholder='是否为其他分类'
                         label="其他分类" />
-                    </div>
+                    </div> -->
+                </div>
+                <div class='item'>
+                    <van-cell title="活动发布日期" :value="introduceData.time" @click="show = true" />
+                    <van-calendar :minDate="new Date(2010, 0, 1)"  v-model="show" @confirm="onConfirm" />
                 </div>
                 <div class='item'>
                     <van-field v-model="introduceData.level" label="推荐等级" />
@@ -113,6 +117,7 @@ let OSS = require('ali-oss');
 export default {
    data(){
        return {
+           show:false,
            active:0,
         selfTags:'',
         introduceData:{},
@@ -126,7 +131,8 @@ export default {
           {key:'tuiguang',label:'应用推广',checked:false},
           {key:'guaji',label:'挂机软件',checked:false},
           {key:'dama',label:'扫码打码',checked:false},
-          {key:'转发',label:'转发签到',checked:false}]
+          {key:'xuanshangpingtai',label:'悬赏平台',checked:false},
+          {key:'zhuanfa',label:'转发签到',checked:false}]
        }
    },
     beforeRouteEnter(to, from, next){
@@ -149,7 +155,7 @@ export default {
   },
   mounted(){
     //   console.log('mounted')
-    
+    // this.date = new Date().Format('yyyy-MM-dd')
     // this.initScrollPage();
         
   },
@@ -160,6 +166,10 @@ export default {
       }
   },
   methods:{
+      onConfirm(e){
+          this.introduceData.time = new Date(e).Format('yyyy-MM-dd')
+          this.show = false
+      },
       getListResult(){
           let resultTags = []
           for(let i = 0; i<this.tags.length; i++){
@@ -170,11 +180,15 @@ export default {
           if(this.selfTags){
               resultTags.push(this.selfTags)
           }
+          
+          
+
           let dd = deepClone(this.introduceData)
           dd.tags = JSON.stringify(resultTags)
           if(window.baseCang === 'cangku'){
             dd.browseCount = random(10,100)
           }
+          dd.time = new Date(this.introduceData.time + ' 00:00:00').valueOf()
           
           return dd
       },
@@ -305,6 +319,9 @@ export default {
         }else{
             this.selfTags = ''
         }
+
+        obj.time = new Date(obj.time).Format('yyyy-MM-dd')
+
         if(!obj.level){
             obj.level = 0;
         }
